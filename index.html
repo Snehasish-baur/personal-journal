@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Privacy-First Personal Journal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <style>
+    /* small local styles */
+    html,body,#app{height:100%;}
+    .entry-card {transition: box-shadow .15s;}
+    .entry-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.12)}.dark .entry-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono"}
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-200">
+  <div id="app" class="min-h-screen flex items-center justify-center p-4 ">
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow p-6 dark:bg-slate-800">
+
+
+      <!-- LOGIN / UNLOCK -->
+      <div id="loginView">
+        <h1 class="text-2xl font-semibold">Privacy-First Personal Journal</h1>
+        <p class="mt-2 text-sm text-slate-600">Your entries are encrypted locally. Pick a password and remember it — there is no recovery.</p>
+
+
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+            <input id="password" type="password" placeholder="Choose a password" class="mt-1 block w-full rounded-md border py-2 px-3 dark:bg-slate-700 dark:border-slate-600 dark:text-white" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Confirm (for new users)</label>
+            <input id="confirmPassword" type="password" placeholder="Confirm (optional)" class="mt-1 block w-full rounded-md border py-2 px-3 dark:bg-slate-700 dark:border-slate-600 dark:text-white" />
+          </div>
+        </div>
+
+
+        <div class="mt-4 flex gap-2">
+          <button id="unlockBtn" class="px-4 py-2 bg-sky-600 text-white rounded-md">Unlock / Create</button>
+          <button id="openDemoBtn" class="px-4 py-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Open Demo Data</button>
+          <button id="clearAllBtn" class="ml-auto px-3 py-2 text-sm text-red-600">Erase All Local Data</button>
+        </div>
+
+
+        <div id="loginMsg" class="mt-3 text-sm text-rose-600"></div>
+      </div>
+
+
+      <!-- APP -->
+      <div id="appView" class="hidden">
+        <div class="flex items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-xl font-semibold">My Journal</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Encrypted locally with your password. Plaintext is only in memory while unlocked.</p>
+              </div>
+
+
+              <div class="flex gap-2 items-center">
+                <input id="search" class="mono border rounded-md px-2 py-1 text-sm dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Search entries" />
+                <button id="newEntryBtn" class="px-3 py-1 bg-green-600 text-white rounded-md">New</button>
+                <button id="exportBtn" class="px-3 py-1 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Export</button>
+                <label class="px-3 py-1 border rounded-md cursor-pointer dark:border-slate-600 dark:hover:bg-slate-700"><input id="importFile" type="file" accept="application/json" class="hidden" /> Import</label>
+                <button id="logoutBtn" class="px-3 py-1 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Lock</button>
+                <button id="themeToggleBtn" title="Toggle Theme" class="p-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">
+                  <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707z"/>
+                  </svg>
+                  <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="hidden" viewBox="0 0 16 16">
+                    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+                    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162h1.212a.217.217 0 0 1 .134.386l-.979.715.387 1.162a.217.217 0 0 1-.316.242l-.979-.715-.979.715a.217.217 0 0 1-.316-.242l.387-1.162-.979-.715a.217.217 0 0 1 .134-.386h1.212l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-1">
+                <div id="entriesList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div>
+              </div>
+
+
+              <div class="md:col-span-2">
+                <div class="bg-slate-50 rounded-lg p-4 dark:bg-slate-900/50">
+                  <input id="entryTitle" placeholder="Title" class="w-full text-lg font-medium bg-transparent outline-none" />
+                  <textarea id="entryBody" rows="12" placeholder="Write something..." class="w-full mt-2 bg-transparent outline-none resize-none"></textarea>
+
+
+                  <div class="mt-3 flex gap-2">
+                    <button id="saveBtn" class="px-4 py-2 bg-sky-600 text-white rounded-md">Save</button>
+                    <button id="deleteBtn" class="px-4 py-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Delete</button>
+                    <button id="previewBtn" class="px-4 py-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Preview</button>
+                    <div id="savedMsg" class="ml-auto text-sm text-slate-600 dark:text-slate-400"></div>
+                  </div>
+
+
+                  <div id="previewArea" class="mt-4 hidden bg-white p-3 border rounded dark:bg-slate-700 dark:border-slate-600"></div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+
+      </div>
+
+
+    </div>
+  </div>
+
+
+<script>
+/* ---------- Simple IndexedDB wrapper ---------- */
+function openDatabase(){
+  return new Promise((res,rej)=>{
+    const r = indexedDB.open('journal_db_v1',1);
+    r.onupgradeneeded = e => {
+      const db = e.target.result;
+      if(!db.objectStoreNames.contains('entries')){
+        db.createObjectStore('entries',{keyPath:'id', autoIncrement:true});
+      }
+    }
+    r.onsuccess = ()=> res(r.result);
+    r.onerror = ()=> rej(r.error);
+  });
+}
+
+
+async function dbPut(obj){
+  const db = await openDatabase();
+  return new Promise((res,rej)=>{
+    const tx = db.transaction('entries','readwrite');
+    const store = tx.objectStore('entries');
+    const req = store.put(obj);
+    req.onsuccess = ()=> res(req.result);
+    req.onerror = ()=> rej(req.error);
+  });
+}
+async function dbGetAll(){
+  const db = await openDatabase();
+  return new Promise((res,rej)=>{
+    const tx = db.transaction('entries','readonly');
+    const store = tx.objectStore('entries');
+    const req = store.getAll();
+    req.onsuccess = ()=> res(req.result);
+    req.onerror = ()=> rej(req.error);
+  });
+}
+async function dbDelete(id){
+  const db = await openDatabase();
+  return new Promise((res,rej)=>{
+    const tx = db.transaction('entries','readwrite');
+    const store = tx.objectStore('entries');
+    const req = store.delete(id);
+    req.onsuccess = ()=> res();
+    req.onerror = ()=> rej(req.error);
+  });
+}
+async function dbClear(){
+  const db = await openDatabase();
+  return new Promise((res,rej)=>{
+    const tx = db.transaction('entries','readwrite');
+    const store = tx.objectStore('entries');
+    const req = store.clear();
+    req.onsuccess = ()=> res();
+    req.onerror = ()=> rej(req.error);
+  });
+}
+
+
+/* ---------- Crypto helpers (Web Crypto API) ---------- */
+const enc = new TextEncoder();
+const dec = new TextDecoder();
+
+
+function getOrCreateSalt(){
+  let s = localStorage.getItem('journal_salt');
+  if(!s){
+    const sv = crypto.getRandomValues(new Uint8Array(16));
+    s = Array.from(sv).map(n=>String.fromCharCode(n)).join('');
+    localStorage.setItem('journal_salt', btoa(s));
+  }
+  return Uint8Array.from(atob(localStorage.getItem('journal_salt')).split('').map(c=>c.charCodeAt(0)));
+}
+
+
+async function deriveKey(password){
+  const salt = getOrCreateSalt();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt, iterations:200000, hash:'SHA-256'},
+    keyMaterial,
+    {name:'AES-GCM', length:256},
+    false,
+    ['encrypt','decrypt']
+  );
+}
+
+
+async function encryptString(password, plainText){
+  const key = await deriveKey(password);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, enc.encode(plainText));
+  return {cipher: arrayBufferToBase64(ct), iv: arrayBufferToBase64(iv)};
+}
+
+
+async function decryptString(password, cipherB64, ivB64){
+  const key = await deriveKey(password);
+  const ct = base64ToArrayBuffer(cipherB64);
+  const iv = base64ToArrayBuffer(ivB64);
+  try{
+    const plain = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, ct);
+    return dec.decode(plain);
+  }catch(e){
+    throw new Error('Decryption failed — wrong password or corrupted data.');
+  }
+}
+
+
+function arrayBufferToBase64(buf){
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  for(let i=0;i<bytes.byteLength;i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+function base64ToArrayBuffer(b64){
+  const binary = atob(b64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for(let i=0;i<len;i++) bytes[i]=binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+
+/* ---------- App state ---------- */
+let sessionPassword = null; // kept only in JS memory while unlocked
+let plaintextCache = [];   // decrypted entries in memory [{id,title,body,date}]
+
+
+/* ---------- UI bindings ---------- */
+const loginView = document.getElementById('loginView');
+const appView = document.getElementById('appView');
+const unlockBtn = document.getElementById('unlockBtn');
+const passwordInput = document.getElementById('password');
+const confirmInput = document.getElementById('confirmPassword');
+const loginMsg = document.getElementById('loginMsg');
+const entriesList = document.getElementById('entriesList');
+const entryTitle = document.getElementById('entryTitle');
+const entryBody = document.getElementById('entryBody');
+const saveBtn = document.getElementById('saveBtn');
+const newEntryBtn = document.getElementById('newEntryBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const searchInput = document.getElementById('search');
+const deleteBtn = document.getElementById('deleteBtn');
+const previewBtn = document.getElementById('previewBtn');
+const previewArea = document.getElementById('previewArea');
+const savedMsg = document.getElementById('savedMsg');
+const exportBtn = document.getElementById('exportBtn');
+const importFile = document.getElementById('importFile');
+const clearAllBtn = document.getElementById('clearAllBtn');
+const openDemoBtn = document.getElementById('openDemoBtn');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const sunIcon = document.getElementById('sunIcon');
+const moonIcon = document.getElementById('moonIcon');
+
+
+let currentEditingId = null;
+
+
+/* ---------- Theme ---------- */
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.classList.add('dark');
+    sunIcon.classList.add('hidden');
+    moonIcon.classList.remove('hidden');
+  } else {
+    document.documentElement.classList.remove('dark');
+    sunIcon.classList.remove('hidden');
+    moonIcon.classList.add('hidden');
+  }
+}
+
+
+function toggleTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  const newTheme = isDark ? 'light' : 'dark';
+  localStorage.setItem('journal_theme', newTheme);
+  applyTheme(newTheme);
+}
+
+
+themeToggleBtn.addEventListener('click', toggleTheme);
+
+
+
+
+/* ---------- Login / Unlock flow ---------- */
+unlockBtn.addEventListener('click', async ()=>{
+  loginMsg.textContent = '';
+  const pw = passwordInput.value.trim();
+  const conf = confirmInput.value.trim();
+  if(!pw){ loginMsg.textContent = 'Enter a password.'; return; }
+
+
+  // If user provided confirm and they match, we allow creating salt and proceed.
+  if(conf && conf !== pw){ loginMsg.textContent = 'Password and confirm do not match.'; return; }
+
+
+  sessionPassword = pw;
+  try{
+    await loadAllDecrypted();
+    showApp();
+  }catch(e){
+    loginMsg.textContent = e.message || 'Failed to unlock.';
+    sessionPassword = null;
+  }
+});
+
+
+openDemoBtn.addEventListener('click', async ()=>{
+  // create a small demo encrypted entry if none exist
+  const pw = 'demo';
+  passwordInput.value = pw;
+  confirmInput.value = pw;
+  sessionPassword = pw;
+  const demo = {title:'Welcome!', body:'This is a demo encrypted entry. Change or delete it.', date:new Date().toISOString()};
+  const encd = await encryptString(pw, JSON.stringify(demo));
+  await dbPut({data:encd.cipher, iv:encd.iv, created:new Date().toISOString()});
+  await loadAllDecrypted();
+  showApp();
+});
+
+
+clearAllBtn.addEventListener('click', async ()=>{
+  if(!confirm('Erase all local journal data? This cannot be undone.')) return;
+  await dbClear();
+  localStorage.removeItem('journal_salt');
+  location.reload();
+});
+
+
+function showApp(){
+  loginView.classList.add('hidden');
+  appView.classList.remove('hidden');
+  renderEntriesList();
+}
+
+
+async function loadAllDecrypted(){
+  // load all entries and try decrypt with sessionPassword
+  const items = await dbGetAll();
+  plaintextCache = [];
+  for(const it of items){
+    try{
+      const js = await decryptString(sessionPassword, it.data, it.iv);
+      const obj = JSON.parse(js);
+      plaintextCache.push({id:it.id, title:obj.title, body:obj.body, date:obj.date});
+    }catch(e){
+      // if any fails, bail — wrong password
+      throw new Error('Wrong password or corrupted entries.');
+    }
+  }
+}
+
+
+/* ---------- Render / CRUD ---------- */
+function renderEntriesList(filtered){
+  const list = (filtered||plaintextCache).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  entriesList.innerHTML = '';
+  if(list.length===0){ entriesList.innerHTML = '<div class="text-sm text-slate-500 dark:text-slate-400">No entries yet.</div>'; return; }
+  for(const e of list){
+    const div = document.createElement('div');
+    div.className = 'entry-card p-3 bg-white rounded border cursor-pointer dark:bg-slate-700 dark:border-slate-600';
+    div.innerHTML = `<div class="flex items-start justify-between"><div><div class="font-medium">${escapeHtml(e.title||'Untitled')}</div><div class="text-xs text-slate-500 dark:text-slate-400">${new Date(e.date).toLocaleString()}</div></div><div class="text-slate-400 dark:text-slate-500">ID ${e.id}</div></div>`;
+    div.addEventListener('click', ()=>{ loadIntoEditor(e); });
+    entriesList.appendChild(div);
+  }
+}
+
+
+function loadIntoEditor(e){
+  currentEditingId = e.id;
+  entryTitle.value = e.title || '';
+  entryBody.value = e.body || '';
+  savedMsg.textContent = '';
+}
+
+
+newEntryBtn.addEventListener('click', ()=>{
+  currentEditingId = null;
+  entryTitle.value = '';
+  entryBody.value = '';
+  previewArea.classList.add('hidden');
+});
+
+
+saveBtn.addEventListener('click', async ()=>{
+  if(!sessionPassword) return alert('No session');
+  const payload = {title:entryTitle.value.trim(), body:entryBody.value, date:new Date().toISOString()};
+  const encd = await encryptString(sessionPassword, JSON.stringify(payload));
+  if(currentEditingId){
+    // replace existing (we write as a new object with same id)
+    await dbPut({id:currentEditingId, data:encd.cipher, iv:encd.iv, created:new Date().toISOString()});
+  }else{
+    await dbPut({data:encd.cipher, iv:encd.iv, created:new Date().toISOString()});
+  }
+  await loadAllDecrypted();
+  renderEntriesList();
+  savedMsg.textContent = 'Saved.';
+  setTimeout(()=> savedMsg.textContent = '',1500);
+});
+
+
+deleteBtn.addEventListener('click', async ()=>{
+  if(!currentEditingId) return alert('No entry selected.');
+  if(!confirm('Delete this entry?')) return;
+  await dbDelete(currentEditingId);
+  currentEditingId = null;
+  entryTitle.value = '';
+  entryBody.value = '';
+  await loadAllDecrypted();
+  renderEntriesList();
+});
+
+
+logoutBtn.addEventListener('click', ()=>{
+  if(!confirm('Lock the journal (clears session memory)?')) return;
+  sessionPassword = null;
+  plaintextCache = [];
+  location.reload();
+});
+
+
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim().toLowerCase();
+  if(!q){ renderEntriesList(); return; }
+  const filtered = plaintextCache.filter(e=> (e.title||'').toLowerCase().includes(q) || (e.body||'').toLowerCase().includes(q));
+  renderEntriesList(filtered);
+});
+
+
+previewBtn.addEventListener('click', ()=>{
+  const md = entryBody.value;
+  // minimal markdown-ish preview: convert lines and **bold** and *italic*
+  let html = escapeHtml(md)
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/\n/g,'<br/>');
+  previewArea.innerHTML = html;
+  previewArea.classList.remove('hidden');
+});
+
+
+/* ---------- Export / Import ---------- */
+exportBtn.addEventListener('click', async ()=>{
+  const all = await dbGetAll();
+  const blob = new Blob([JSON.stringify(all)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'journal-backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+
+importFile.addEventListener('change', async (ev)=>{
+  const f = ev.target.files[0];
+  if(!f) return;
+  const txt = await f.text();
+  try{
+    const arr = JSON.parse(txt);
+    if(!Array.isArray(arr)) throw new Error('Invalid file');
+    for(const it of arr){
+      // basic validation
+      if(it.data && it.iv){
+        await dbPut(it);
+      }
+    }
+    alert('Imported. Remember to use the correct password to unlock entries.');
+  }catch(e){ alert('Import failed: '+e.message); }
+});
+
+
+/* ---------- Utility ---------- */
+function escapeHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+
+/* ---------- Demo: load entries list if unlocked with no entries (graceful) ---------- */
+(async function(){
+  // Apply saved theme or system preference
+  const savedTheme = localStorage.getItem('journal_theme');
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    applyTheme('dark'); // Default to dark
+  }
+  // nothing by default. Wait for user to unlock.
+})();
+
+
+</script>
+</body>
+</html>
+
