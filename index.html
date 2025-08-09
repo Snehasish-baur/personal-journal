@@ -10,21 +10,15 @@
       darkMode: 'class',
     }
   </script>
-  <style>
-    /* small local styles */
-    html,body,#app{height:100%;}
-    .entry-card {transition: box-shadow .15s;}
-    .entry-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.12)}.dark .entry-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.25)}
-    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono"}
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-200">
-  <div id="app" class="min-h-screen flex items-center justify-center p-4 ">
-    <div class="w-full max-w-4xl bg-white rounded-2xl shadow p-6 dark:bg-slate-800">
+  <div id="app" class="min-h-screen flex items-center justify-center p-2 sm:p-4">
+    <div class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl shadow-lg p-6">
 
 
       <!-- LOGIN / UNLOCK -->
-      <div id="loginView">
+      <div id="loginView" class="animate-fade-in">
         <h1 class="text-2xl font-semibold">Privacy-First Personal Journal</h1>
         <p class="mt-2 text-sm text-slate-600">Your entries are encrypted locally. Pick a password and remember it — there is no recovery.</p>
 
@@ -42,7 +36,10 @@
 
 
         <div class="mt-4 flex gap-2">
-          <button id="unlockBtn" class="px-4 py-2 bg-sky-600 text-white rounded-md">Unlock / Create</button>
+          <button id="unlockBtn" class="btn-primary px-4 py-2 text-white rounded-md flex items-center justify-center gap-2 w-40">
+            <span id="unlockBtnText">Unlock / Create</span>
+            <div id="unlockSpinner" class="spinner hidden"></div>
+          </button>
           <button id="openDemoBtn" class="px-4 py-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Open Demo Data</button>
           <button id="clearAllBtn" class="ml-auto px-3 py-2 text-sm text-red-600">Erase All Local Data</button>
         </div>
@@ -65,7 +62,7 @@
 
               <div class="flex gap-2 items-center">
                 <input id="search" class="mono border rounded-md px-2 py-1 text-sm dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Search entries" />
-                <button id="newEntryBtn" class="px-3 py-1 bg-green-600 text-white rounded-md">New</button>
+                <button id="newEntryBtn" class="btn-secondary px-3 py-1 text-white rounded-md">New</button>
                 <button id="exportBtn" class="px-3 py-1 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Export</button>
                 <label class="px-3 py-1 border rounded-md cursor-pointer dark:border-slate-600 dark:hover:bg-slate-700"><input id="importFile" type="file" accept="application/json" class="hidden" /> Import</label>
                 <button id="logoutBtn" class="px-3 py-1 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Lock</button>
@@ -76,6 +73,11 @@
                   <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="hidden" viewBox="0 0 16 16">
                     <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
                     <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162h1.212a.217.217 0 0 1 .134.386l-.979.715.387 1.162a.217.217 0 0 1-.316.242l-.979-.715-.979.715a.217.217 0 0 1-.316-.242l.387-1.162-.979-.715a.217.217 0 0 1 .134-.386h1.212l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+                  </svg>
+                </button>
+                <button id="colorThemeBtn" title="Change Color Theme" class="p-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-palette-fill" viewBox="0 0 16 16">
+                    <path d="M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-15.93 1.21.5.5 0 0 0 .948-.324c.062-.242.142-.484.256-.716.114-.232.25-.457.4-.67.15-.213.312-.414.488-.608.176-.195.366-.38.57-.558.204-.178.42-.345.648-.5.228-.155.467-.298.712-.43.245-.133.5-.256.76-.37.26-.115.528-.22.802-.316.274-.097.557-.185.848-.265.292-.08.59-.152.895-.214.305-.06.615-.11.93-.15.315-.04.633-.07.953-.09.32-.02.643-.03.968-.03a1 1 0 0 0 0-2c-.325 0-.648.01-.968.03-.32.02-.638.05-.953.09-.315.04-.625.09-.93.15-.305.06-.6.134-.895.214-.29.08-.58.168-.848.265-.274.096-.542.201-.802.316-.26.114-.515.237-.76.37-.245.132-.484.275-.712.43-.228.155-.444.322-.648.5-.204.178-.394.363-.57.558-.176.195-.338.396-.488.608-.15.213-.286.438-.4.67-.114.232-.194.474-.256.716a.5.5 0 1 0 .948.324c.04-.16.09-.312.15-.457.062-.145.132-.28.21-.408.078-.127.16-.24.25-.348.09-.108.187-.205.29-.29.103-.085.21-.16.32-.225.11-.064.227-.12.34-.164.115-.045.23-.08.35-.108.12-.028.24-.045.36-.053.12-.008.243-.01.368-.01s.248.002.368.01c.12.008.24.025.36.053.12.028.235.063.35.108.113.044.23.1.34.164.11.065.217.14.32.225.103.085.2.182.29.29.09.108.172.22.25.348.078.128.148.263.21.408.06.145.11.297.15.457z"/>
                   </svg>
                 </button>
               </div>
@@ -95,7 +97,7 @@
 
 
                   <div class="mt-3 flex gap-2">
-                    <button id="saveBtn" class="px-4 py-2 bg-sky-600 text-white rounded-md">Save</button>
+                    <button id="saveBtn" class="btn-primary px-4 py-2 text-white rounded-md">Save</button>
                     <button id="deleteBtn" class="px-4 py-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Delete</button>
                     <button id="previewBtn" class="px-4 py-2 border rounded-md dark:border-slate-600 dark:hover:bg-slate-700">Preview</button>
                     <div id="savedMsg" class="ml-auto text-sm text-slate-600 dark:text-slate-400"></div>
@@ -119,399 +121,9 @@
   </div>
 
 
-<script>
-/* ---------- Simple IndexedDB wrapper ---------- */
-function openDatabase(){
-  return new Promise((res,rej)=>{
-    const r = indexedDB.open('journal_db_v1',1);
-    r.onupgradeneeded = e => {
-      const db = e.target.result;
-      if(!db.objectStoreNames.contains('entries')){
-        db.createObjectStore('entries',{keyPath:'id', autoIncrement:true});
-      }
-    }
-    r.onsuccess = ()=> res(r.result);
-    r.onerror = ()=> rej(r.error);
-  });
-}
-
-
-async function dbPut(obj){
-  const db = await openDatabase();
-  return new Promise((res,rej)=>{
-    const tx = db.transaction('entries','readwrite');
-    const store = tx.objectStore('entries');
-    const req = store.put(obj);
-    req.onsuccess = ()=> res(req.result);
-    req.onerror = ()=> rej(req.error);
-  });
-}
-async function dbGetAll(){
-  const db = await openDatabase();
-  return new Promise((res,rej)=>{
-    const tx = db.transaction('entries','readonly');
-    const store = tx.objectStore('entries');
-    const req = store.getAll();
-    req.onsuccess = ()=> res(req.result);
-    req.onerror = ()=> rej(req.error);
-  });
-}
-async function dbDelete(id){
-  const db = await openDatabase();
-  return new Promise((res,rej)=>{
-    const tx = db.transaction('entries','readwrite');
-    const store = tx.objectStore('entries');
-    const req = store.delete(id);
-    req.onsuccess = ()=> res();
-    req.onerror = ()=> rej(req.error);
-  });
-}
-async function dbClear(){
-  const db = await openDatabase();
-  return new Promise((res,rej)=>{
-    const tx = db.transaction('entries','readwrite');
-    const store = tx.objectStore('entries');
-    const req = store.clear();
-    req.onsuccess = ()=> res();
-    req.onerror = ()=> rej(req.error);
-  });
-}
-
-
-/* ---------- Crypto helpers (Web Crypto API) ---------- */
-const enc = new TextEncoder();
-const dec = new TextDecoder();
-
-
-function getOrCreateSalt(){
-  let s = localStorage.getItem('journal_salt');
-  if(!s){
-    const sv = crypto.getRandomValues(new Uint8Array(16));
-    s = Array.from(sv).map(n=>String.fromCharCode(n)).join('');
-    localStorage.setItem('journal_salt', btoa(s));
-  }
-  return Uint8Array.from(atob(localStorage.getItem('journal_salt')).split('').map(c=>c.charCodeAt(0)));
-}
-
-
-async function deriveKey(password){
-  const salt = getOrCreateSalt();
-  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
-  return crypto.subtle.deriveKey(
-    {name:'PBKDF2', salt, iterations:200000, hash:'SHA-256'},
-    keyMaterial,
-    {name:'AES-GCM', length:256},
-    false,
-    ['encrypt','decrypt']
-  );
-}
-
-
-async function encryptString(password, plainText){
-  const key = await deriveKey(password);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, enc.encode(plainText));
-  return {cipher: arrayBufferToBase64(ct), iv: arrayBufferToBase64(iv)};
-}
-
-
-async function decryptString(password, cipherB64, ivB64){
-  const key = await deriveKey(password);
-  const ct = base64ToArrayBuffer(cipherB64);
-  const iv = base64ToArrayBuffer(ivB64);
-  try{
-    const plain = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, ct);
-    return dec.decode(plain);
-  }catch(e){
-    throw new Error('Decryption failed — wrong password or corrupted data.');
-  }
-}
-
-
-function arrayBufferToBase64(buf){
-  const bytes = new Uint8Array(buf);
-  let binary = '';
-  for(let i=0;i<bytes.byteLength;i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-function base64ToArrayBuffer(b64){
-  const binary = atob(b64);
-  const len = binary.length;
-  const bytes = new Uint8Array(len);
-  for(let i=0;i<len;i++) bytes[i]=binary.charCodeAt(i);
-  return bytes.buffer;
-}
-
-
-/* ---------- App state ---------- */
-let sessionPassword = null; // kept only in JS memory while unlocked
-let plaintextCache = [];   // decrypted entries in memory [{id,title,body,date}]
-
-
-/* ---------- UI bindings ---------- */
-const loginView = document.getElementById('loginView');
-const appView = document.getElementById('appView');
-const unlockBtn = document.getElementById('unlockBtn');
-const passwordInput = document.getElementById('password');
-const confirmInput = document.getElementById('confirmPassword');
-const loginMsg = document.getElementById('loginMsg');
-const entriesList = document.getElementById('entriesList');
-const entryTitle = document.getElementById('entryTitle');
-const entryBody = document.getElementById('entryBody');
-const saveBtn = document.getElementById('saveBtn');
-const newEntryBtn = document.getElementById('newEntryBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const searchInput = document.getElementById('search');
-const deleteBtn = document.getElementById('deleteBtn');
-const previewBtn = document.getElementById('previewBtn');
-const previewArea = document.getElementById('previewArea');
-const savedMsg = document.getElementById('savedMsg');
-const exportBtn = document.getElementById('exportBtn');
-const importFile = document.getElementById('importFile');
-const clearAllBtn = document.getElementById('clearAllBtn');
-const openDemoBtn = document.getElementById('openDemoBtn');
-const themeToggleBtn = document.getElementById('themeToggleBtn');
-const sunIcon = document.getElementById('sunIcon');
-const moonIcon = document.getElementById('moonIcon');
-
-
-let currentEditingId = null;
-
-
-/* ---------- Theme ---------- */
-function applyTheme(theme) {
-  if (theme === 'dark') {
-    document.documentElement.classList.add('dark');
-    sunIcon.classList.add('hidden');
-    moonIcon.classList.remove('hidden');
-  } else {
-    document.documentElement.classList.remove('dark');
-    sunIcon.classList.remove('hidden');
-    moonIcon.classList.add('hidden');
-  }
-}
-
-
-function toggleTheme() {
-  const isDark = document.documentElement.classList.contains('dark');
-  const newTheme = isDark ? 'light' : 'dark';
-  localStorage.setItem('journal_theme', newTheme);
-  applyTheme(newTheme);
-}
-
-
-themeToggleBtn.addEventListener('click', toggleTheme);
-
-
-
-
-/* ---------- Login / Unlock flow ---------- */
-unlockBtn.addEventListener('click', async ()=>{
-  loginMsg.textContent = '';
-  const pw = passwordInput.value.trim();
-  const conf = confirmInput.value.trim();
-  if(!pw){ loginMsg.textContent = 'Enter a password.'; return; }
-
-
-  // If user provided confirm and they match, we allow creating salt and proceed.
-  if(conf && conf !== pw){ loginMsg.textContent = 'Password and confirm do not match.'; return; }
-
-
-  sessionPassword = pw;
-  try{
-    await loadAllDecrypted();
-    showApp();
-  }catch(e){
-    loginMsg.textContent = e.message || 'Failed to unlock.';
-    sessionPassword = null;
-  }
-});
-
-
-openDemoBtn.addEventListener('click', async ()=>{
-  // create a small demo encrypted entry if none exist
-  const pw = 'demo';
-  passwordInput.value = pw;
-  confirmInput.value = pw;
-  sessionPassword = pw;
-  const demo = {title:'Welcome!', body:'This is a demo encrypted entry. Change or delete it.', date:new Date().toISOString()};
-  const encd = await encryptString(pw, JSON.stringify(demo));
-  await dbPut({data:encd.cipher, iv:encd.iv, created:new Date().toISOString()});
-  await loadAllDecrypted();
-  showApp();
-});
-
-
-clearAllBtn.addEventListener('click', async ()=>{
-  if(!confirm('Erase all local journal data? This cannot be undone.')) return;
-  await dbClear();
-  localStorage.removeItem('journal_salt');
-  location.reload();
-});
-
-
-function showApp(){
-  loginView.classList.add('hidden');
-  appView.classList.remove('hidden');
-  renderEntriesList();
-}
-
-
-async function loadAllDecrypted(){
-  // load all entries and try decrypt with sessionPassword
-  const items = await dbGetAll();
-  plaintextCache = [];
-  for(const it of items){
-    try{
-      const js = await decryptString(sessionPassword, it.data, it.iv);
-      const obj = JSON.parse(js);
-      plaintextCache.push({id:it.id, title:obj.title, body:obj.body, date:obj.date});
-    }catch(e){
-      // if any fails, bail — wrong password
-      throw new Error('Wrong password or corrupted entries.');
-    }
-  }
-}
-
-
-/* ---------- Render / CRUD ---------- */
-function renderEntriesList(filtered){
-  const list = (filtered||plaintextCache).slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
-  entriesList.innerHTML = '';
-  if(list.length===0){ entriesList.innerHTML = '<div class="text-sm text-slate-500 dark:text-slate-400">No entries yet.</div>'; return; }
-  for(const e of list){
-    const div = document.createElement('div');
-    div.className = 'entry-card p-3 bg-white rounded border cursor-pointer dark:bg-slate-700 dark:border-slate-600';
-    div.innerHTML = `<div class="flex items-start justify-between"><div><div class="font-medium">${escapeHtml(e.title||'Untitled')}</div><div class="text-xs text-slate-500 dark:text-slate-400">${new Date(e.date).toLocaleString()}</div></div><div class="text-slate-400 dark:text-slate-500">ID ${e.id}</div></div>`;
-    div.addEventListener('click', ()=>{ loadIntoEditor(e); });
-    entriesList.appendChild(div);
-  }
-}
-
-
-function loadIntoEditor(e){
-  currentEditingId = e.id;
-  entryTitle.value = e.title || '';
-  entryBody.value = e.body || '';
-  savedMsg.textContent = '';
-}
-
-
-newEntryBtn.addEventListener('click', ()=>{
-  currentEditingId = null;
-  entryTitle.value = '';
-  entryBody.value = '';
-  previewArea.classList.add('hidden');
-});
-
-
-saveBtn.addEventListener('click', async ()=>{
-  if(!sessionPassword) return alert('No session');
-  const payload = {title:entryTitle.value.trim(), body:entryBody.value, date:new Date().toISOString()};
-  const encd = await encryptString(sessionPassword, JSON.stringify(payload));
-  if(currentEditingId){
-    // replace existing (we write as a new object with same id)
-    await dbPut({id:currentEditingId, data:encd.cipher, iv:encd.iv, created:new Date().toISOString()});
-  }else{
-    await dbPut({data:encd.cipher, iv:encd.iv, created:new Date().toISOString()});
-  }
-  await loadAllDecrypted();
-  renderEntriesList();
-  savedMsg.textContent = 'Saved.';
-  setTimeout(()=> savedMsg.textContent = '',1500);
-});
-
-
-deleteBtn.addEventListener('click', async ()=>{
-  if(!currentEditingId) return alert('No entry selected.');
-  if(!confirm('Delete this entry?')) return;
-  await dbDelete(currentEditingId);
-  currentEditingId = null;
-  entryTitle.value = '';
-  entryBody.value = '';
-  await loadAllDecrypted();
-  renderEntriesList();
-});
-
-
-logoutBtn.addEventListener('click', ()=>{
-  if(!confirm('Lock the journal (clears session memory)?')) return;
-  sessionPassword = null;
-  plaintextCache = [];
-  location.reload();
-});
-
-
-searchInput.addEventListener('input', ()=>{
-  const q = searchInput.value.trim().toLowerCase();
-  if(!q){ renderEntriesList(); return; }
-  const filtered = plaintextCache.filter(e=> (e.title||'').toLowerCase().includes(q) || (e.body||'').toLowerCase().includes(q));
-  renderEntriesList(filtered);
-});
-
-
-previewBtn.addEventListener('click', ()=>{
-  const md = entryBody.value;
-  // minimal markdown-ish preview: convert lines and **bold** and *italic*
-  let html = escapeHtml(md)
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/\n/g,'<br/>');
-  previewArea.innerHTML = html;
-  previewArea.classList.remove('hidden');
-});
-
-
-/* ---------- Export / Import ---------- */
-exportBtn.addEventListener('click', async ()=>{
-  const all = await dbGetAll();
-  const blob = new Blob([JSON.stringify(all)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'journal-backup.json';
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-
-importFile.addEventListener('change', async (ev)=>{
-  const f = ev.target.files[0];
-  if(!f) return;
-  const txt = await f.text();
-  try{
-    const arr = JSON.parse(txt);
-    if(!Array.isArray(arr)) throw new Error('Invalid file');
-    for(const it of arr){
-      // basic validation
-      if(it.data && it.iv){
-        await dbPut(it);
-      }
-    }
-    alert('Imported. Remember to use the correct password to unlock entries.');
-  }catch(e){ alert('Import failed: '+e.message); }
-});
-
-
-/* ---------- Utility ---------- */
-function escapeHtml(s){
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-
-/* ---------- Demo: load entries list if unlocked with no entries (graceful) ---------- */
-(async function(){
-  // Apply saved theme or system preference
-  const savedTheme = localStorage.getItem('journal_theme');
-  if (savedTheme) {
-    applyTheme(savedTheme);
-  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    applyTheme('dark'); // Default to dark
-  }
-  // nothing by default. Wait for user to unlock.
-})();
-
-
-</script>
+<script src="script.js" defer></script>
 </body>
 </html>
+
+
 
